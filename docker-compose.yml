@@ -1,0 +1,14 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-node
+    ports:
+      - "8080:8080"  # hôte:conteneur
+    environment:
+      - PORT=8080
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules  # évite les conflits avec les node_modules de l'hôte

@@ -39,7 +39,7 @@
 
     - name: Cloner le dépôt de l’API
       git:
-        repo: https://github.com/Projet-CI-CD/API.git
+        repo: https://github.com/Fryxis/CI-CD-YNOV-EVALUATION.git
         dest: /opt/api
         update: yes
     
