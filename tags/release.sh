@@ -22,7 +22,7 @@ release_with_standard_version() {
   echo "Incrémentation de version (standard-version)..."
   npx standard-version --release-as minor --changelog
 
-  VERSION=$(jq -r .version ./api/package.json)
+  VERSION=$(jq -r .version package.json)
   echo "Nouvelle version : v$VERSION"
 
   echo "Création du tag git..."
