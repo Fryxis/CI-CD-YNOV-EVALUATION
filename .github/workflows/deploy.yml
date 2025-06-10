@@ -1,7 +1,9 @@
 name: Provision & Déploiement API
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   terraform:
@@ -19,14 +21,14 @@ jobs:
 
       - name: Créer credentials.json depuis le secret base64
         run: |
-          echo "${{ secrets.GCP_CREDENTIALS }}" | base64 -d > ${{ github.workspace }}/infra/credentials.json
+          echo "${{ secrets.GCP_CREDENTIALS }}" | base64 -d > ${{ github.workspace }}/terraform/credentials.json
 
       - name: Plan Terraform
         working-directory: terraform
         run: |
           terraform init
           terraform plan \
-            -var="gcp_credentials=${{ github.workspace }}/infra/credentials.json" \
+            -var="gcp_credentials=${{ github.workspace }}/terraform/credentials.json" \
             -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
             -var-file="terraform.tfvars"
 
@@ -34,12 +36,12 @@ jobs:
         working-directory: infra
         run: |
           terraform apply -auto-approve \
-            -var="gcp_credentials=${{ github.workspace }}/infra/credentials.json" \
+            -var="gcp_credentials=${{ github.workspace }}/terraform/credentials.json" \
             -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
             -var-file="terraform.tfvars"
 
       - name: Générer inventory.ini pour Ansible
-        working-directory: infra
+        working-directory: terraform
         run: |
           IP=$(terraform output -raw vm_external_ip)
           echo "[api]" > ../ansible/inventory.ini
