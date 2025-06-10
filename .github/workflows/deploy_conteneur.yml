@@ -1,7 +1,9 @@
 name: Deploy to Google Cloud Run
 
 on:
-  workflow_dispatch:  # Déclenchement manuel uniquement
+  push:
+    branches:
+      - main
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
