@@ -50,16 +50,8 @@
       shell: docker compose up -d --build
       args:
         chdir: /opt/api
-<<<<<<< HEAD
         
     - name: Déployer Uptime Kuma
       shell: docker-compose up -d --build
       args:
         chdir: /opt/api/monitoring
-=======
-    
-    - name: Déployer Uptime Kuma
-      shell: docker-compose up -d --build
-      args:
-        chdir: /opt/monitoring
->>>>>>> 6bed709260cee81f1649082a3968c8c62c5f1e0c
