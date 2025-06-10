@@ -29,6 +29,7 @@
         name:
           - docker-ce
           - docker-compose-plugin
+          - docker-compose
         state: present
 
     - name: Démarrer et activer Docker
@@ -55,3 +56,4 @@
       shell: docker-compose up -d --build
       args:
         chdir: /opt/api/monitoring
+
