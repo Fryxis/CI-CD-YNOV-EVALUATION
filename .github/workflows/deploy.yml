@@ -33,7 +33,7 @@ jobs:
             -var-file="terraform.tfvars"
 
       - name: Appliquer Terraform
-        working-directory: infra
+        working-directory: terraform
         run: |
           terraform apply -auto-approve \
             -var="gcp_credentials=${{ github.workspace }}/terraform/credentials.json" \
