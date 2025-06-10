@@ -1,14 +1,16 @@
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: api-node
+    build: ./api
     ports:
-      - "8080:8080"  # hôte:conteneur
-    environment:
-      - PORT=8080
-    restart: unless-stopped
+      - "3000:3000"
     volumes:
-      - .:/app
-      - /app/node_modules  # évite les conflits avec les node_modules de l'hôte
+      - ./api:/app
+    working_dir: /app
+    command: npm install && npm start
+
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    ports:
+      - "8080:80"

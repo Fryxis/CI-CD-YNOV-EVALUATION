@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Front</title>
+</head>
+<body>
+  <h1>Front → API Test</h1>
+  <button onclick="callApi()">Appeler l'API</button>
+  <p id="response"></p>
+
+  <script>
+    async function callApi() {
+      const res = await fetch('http://localhost:3000/api/hello');
+      const data = await res.json();
+      document.getElementById('response').innerText = data.message;
+    }
+  </script>
+</body>
+</html>
