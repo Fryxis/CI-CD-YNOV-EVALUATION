@@ -32,7 +32,7 @@ jobs:
         run: npm install
 
       - name: Give exec permission to release.sh
-        run: chmod +x .tags/release.sh
+        run: chmod +x ./tags/release.sh
 
       - name: Run release.sh with standard-version
         env:
