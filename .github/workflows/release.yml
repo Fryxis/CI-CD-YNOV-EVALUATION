@@ -18,18 +18,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+      #- name: Setup Node.js
+      #  uses: actions/setup-node@v3
+      #  with:
+      #    node-version: '20'
 
       - name: Configure Git user
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Install dependencies
-        run: npm install
+      #- name: Install dependencies
+      #  run: npm install
 
       - name: Give exec permission to release.sh
         run: chmod +x ./tags/release.sh
