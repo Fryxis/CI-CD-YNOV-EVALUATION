@@ -42,7 +42,10 @@
         repo: https://github.com/Fryxis/CI-CD-YNOV-EVALUATION.git
         dest: /opt/api
         update: yes
-    
+        version: main
+        force: yes
+        accept_hostkey: yes
+
     - name: Lancer l'application avec docker compose up -d --build
       shell: docker compose up -d --build
       args:
