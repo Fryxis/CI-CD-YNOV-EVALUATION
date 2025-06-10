@@ -37,7 +37,7 @@ jobs:
       - name: Run release.sh with standard-version
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: ./release.sh standard-version
+        run: ./tags/release.sh standard-version
 
       - name: Done
         run: echo "Release process completed!"
