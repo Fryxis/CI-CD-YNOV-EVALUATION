@@ -29,6 +29,7 @@
         name:
           - docker-ce
           - docker-compose-plugin
+          - docker-compose
         state: present
 
     - name: Démarrer et activer Docker
