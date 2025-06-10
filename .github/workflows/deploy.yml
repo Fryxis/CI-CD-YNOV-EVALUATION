@@ -1,0 +1,72 @@
+name: Provision & Déploiement API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Provisionner l'infra GCP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cloner le dépôt
+        uses: actions/checkout@v3
+
+      - name: Installer Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.6
+
+      - name: Créer credentials.json depuis le secret base64
+        run: |
+          echo "${{ secrets.GCP_CREDENTIALS }}" | base64 -d > ${{ github.workspace }}/infra/credentials.json
+
+      - name: Plan Terraform
+        working-directory: terraform
+        run: |
+          terraform init
+          terraform plan \
+            -var="gcp_credentials=${{ github.workspace }}/infra/credentials.json" \
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var-file="terraform.tfvars"
+
+      - name: Appliquer Terraform
+        working-directory: infra
+        run: |
+          terraform apply -auto-approve \
+            -var="gcp_credentials=${{ github.workspace }}/infra/credentials.json" \
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var-file="terraform.tfvars"
+
+      - name: Générer inventory.ini pour Ansible
+        working-directory: infra
+        run: |
+          IP=$(terraform output -raw vm_external_ip)
+          echo "[api]" > ../ansible/inventory.ini
+          echo "$IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_rsa" >> ../ansible/inventory.ini
+
+  ansible:
+    name: Déployer l'API avec Ansible
+    runs-on: ubuntu-latest
+    needs: terraform
+
+    steps:
+      - name: Cloner le dépôt
+        uses: actions/checkout@v3
+
+      - name: Installer Ansible et SSH client
+        run: |
+          sudo apt update
+          sudo apt install -y ansible openssh-client
+
+      - name: Ajouter la clé SSH privée
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ANSIBLE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Exécuter le playbook Ansible
+        run: |
+          ansible-playbook -i ansible/inventory.ini ansible/deploy.yml --ssh-extra-args="-o StrictHostKeyChecking=no"

@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Authenticate as GitHub App
+        uses: tibdex/github-app-token@v2
+        id: generate_token
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Configure Git user
+        run: |
+          git config user.name "my-github-app[bot]"
+          git config user.email "my-github-app[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Give exec permission to release.sh
+        run: chmod +x .tags/release.sh
+
+      - name: Run release.sh with standard-version
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: ./release.sh standard-version
+
+      - name: Done
+        run: echo "Release process completed!"

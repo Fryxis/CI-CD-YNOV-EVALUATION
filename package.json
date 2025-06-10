@@ -1,0 +1,28 @@
+{
+  "name": "api",
+  "version": "2.39.0",
+  "private": true,
+  "scripts": {
+    "start": "node api/bin/www",
+    "test": "../node_modules/.bin/jest",
+    "lint": "../node_modules/.bin/eslint api"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "^4.21.2",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "pug": "^3.0.3",
+    "sqlite3": "^5.1.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.25.1",
+    "jest": "^29.7.0",
+    "semantic-release": "^24.2.3",
+    "standard-version": "^9.5.0",
+    "supertest": "^7.1.0"
+  }
+}

@@ -1,0 +1,39 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Environnements
+.env
+.env.local
+.env.*.local
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+
+# IDEs/éditeurs
+.idea/
+.vscode/
+*.swp
+
+# Déploiement
+dist/
+build/
+
+# Autres
+coverage/
+
+# Base de données SQLite
+*.db
+
+# Clé ssh 
+.ssh/
+.ssh/id_rsa
+.ssh/id_rsa.pub

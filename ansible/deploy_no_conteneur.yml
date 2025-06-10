@@ -1,0 +1,48 @@
+---
+- name: Déployer l'API
+  hosts: api
+  become: true
+  vars:
+      NODEJS_VERSION: "22"
+
+  tasks:
+    - name: Installer les paquets nécessaires (git, curl)
+      apt:
+        name:
+          - git
+          - curl
+        update_cache: yes
+
+    - name: Ajouter NodeSource et installer Node.js 22.x
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+        sudo apt update
+        sudo apt install -y nodejs
+
+    - name: Vérifier les versions installées
+      shell: |
+        node -v
+        npm -v
+
+    - name: Cloner le dépôt API dans /root/api
+      git:
+        repo: 'https://github.com/Projet-CI-CD/API.git'
+        dest: /root/api
+        update: yes
+
+    - name: Installer les dépendances Node.js (en root)
+      args:
+        chdir: /root/api
+      shell: |
+        npm install
+
+    - name: Lancer l'API avec npm start (en arrière-plan en root)
+      args:
+        chdir: /root/api
+      shell: |
+        nohup npm start > app.log 2>&1 &
+
+    - name: Vérifier le log de démarrage
+      shell: tail -n 10 /root/api/app.log || echo "Log vide ou inexistant"
