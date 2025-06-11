@@ -216,3 +216,45 @@ gcloud compute instances attach-disk my-vm --disk=vm-disk --zone=europe-west9-b
 - `.github/workflows/deploy.yml` : pipeline avec gestion `snapshot` + `rollback`
 
 ---
+
+## 📈 Supervision & Monitoring
+
+### 🧩 Outil utilisé : Uptime Kuma
+
+Pour assurer un suivi de disponibilité de l’API déployée, l’outil **Uptime Kuma** a été intégré à l’infrastructure.
+
+Uptime Kuma est un moniteur de disponibilité auto-hébergé, comparable à UptimeRobot, permettant de surveiller des services HTTP(s), ping, TCP, etc., avec alertes configurables.
+
+---
+
+### ⚙️ Configuration mise en place
+
+- **Déploiement** : conteneur Docker dédié sur un hôte de supervision
+- **Moniteur actif** : `GET https://<mon-api>/health` (endpoint de santé de l'API)
+- **Méthode** : requête HTTP toutes les 30 secondes
+- **Alerte en cas d’échec** : notification visuelle dans l’interface + e-mail (ou autre service configurable)
+- **Historique** : taux de disponibilité journalier, hebdomadaire, mensuel
+
+---
+
+### 🎯 Objectifs assurés par Kuma
+
+- ✅ Détection immédiate des interruptions de service
+- ✅ Validation du succès post-déploiement (auto-test)
+- ✅ Historique utile pour la démonstration de la fiabilité de l’API
+
+---
+
+### 🖼️ Capture d’écran à inclure
+
+| Élément              | Description                              |
+|----------------------|------------------------------------------|
+| 🟢 Statut en ligne   | Vue du moniteur actif avec "Up" visible  |
+| 🔴 Simulation d’erreur | Capture en cas d’erreur simulée ou réelle |
+| 📊 Historique         | Graphique de disponibilité sur 24h/7j     |
+
+---
+
+### 📂 Fichier associé
+
+- `monitoring/uptime-kuma-config.json` : export de la configuration (optionnel)
