@@ -208,6 +208,7 @@ gcloud compute disks create vm-disk \
   --source-snapshot=snapshot-api-<TIMESTAMP> \
   --zone=europe-west9-b
 gcloud compute instances attach-disk my-vm --disk=vm-disk --zone=europe-west9-b
+```
 
 ### 📂 Fichiers associés
 
