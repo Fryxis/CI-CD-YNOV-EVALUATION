@@ -146,5 +146,73 @@ gcloud compute instances attach-disk my-instance --disk=rollback-disk
 ├── .git/                   # Historique Git (non affiché sur GitHub)
 └── README.md               # Ce fichier
 ```
+## 🔐 Sauvegarde & 🔄 Rollback
+
+### 🗄️ Stratégie de sauvegarde
+
+Afin de garantir une résilience maximale de l’infrastructure, une **sauvegarde automatique** est effectuée à l’aide de **snapshots GCP**. Cette opération est déclenchée **automatiquement après chaque déploiement réussi** via GitHub Actions.
+
+#### 🔧 Outils & Méthode
+
+- **Commande utilisée** : `gcloud compute disks snapshot`
+- **Ressource ciblée** : disque persistant principal (`vm-disk`) de la VM hébergeant l’API
+- **Nom du snapshot** : `snapshot-api-<timestamp>` (ex : `snapshot-api-20250611-130201`)
+- **Zone** : `europe-west9-b`
+- **Déclenchement** : à la fin du job `ansible` dans le pipeline CI/CD
+- **Authentification** : via clé de compte de service GCP encodée en base64, stockée dans `secrets.GCP_CREDENTIALS`
+
+#### 📄 Extrait GitHub Actions
+
+```yaml
+- name: Créer un snapshot du disque
+  run: |
+    TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    gcloud compute disks snapshot vm-disk \
+      --snapshot-names=snapshot-api-$TIMESTAMP \
+      --zone=europe-west9-b \
+      --project=${{ secrets.GCP_PROJECT_ID }}
+```
+## 🔄 Stratégie de rollback
+
+Le rollback permet de **restaurer un état fonctionnel connu** à partir d’un snapshot en cas d’échec du déploiement.
+
+### ✅ Déclenchement conditionnel
+
+Un job `rollback` est automatiquement exécuté dans GitHub Actions si le job `ansible` échoue :
+
+```yaml
+if: ${{ failure() }}
+```
+
+## 🔄 Stratégie de rollback
+
+Le rollback permet de **restaurer un état fonctionnel connu** à partir d’un snapshot en cas d’échec du déploiement.
+
+---
+
+### 🔁 Étapes de restauration
+
+1. **Détacher le disque corrompu**
+2. **Supprimer l’ancien disque**
+3. **Recréer un disque depuis le snapshot**
+4. **Réattacher le disque à la VM**
+
+---
+
+### 🖥️ Script utilisé (GitHub Actions ou manuel)
+
+```bash
+gcloud compute instances detach-disk my-vm --disk=vm-disk --zone=europe-west9-b
+gcloud compute disks delete vm-disk --zone=europe-west9-b --quiet
+gcloud compute disks create vm-disk \
+  --source-snapshot=snapshot-api-<TIMESTAMP> \
+  --zone=europe-west9-b
+gcloud compute instances attach-disk my-vm --disk=vm-disk --zone=europe-west9-b
+
+### 📂 Fichiers associés
+
+- `rollback/restore_from_snapshot.sh` : script shell de restauration manuelle
+- `snapshots/` : documentation et informations sur les snapshots générés
+- `.github/workflows/deploy.yml` : pipeline avec gestion `snapshot` + `rollback`
 
 ---
